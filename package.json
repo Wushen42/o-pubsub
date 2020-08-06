@@ -1,0 +1,31 @@
+{
+  "name": "o-pubsub",
+  "version": "0.0.1",
+  "description": "Object matching publish/subscribe pattern",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha src/**/*.spec.js",
+    "cover": "./scripts/cover.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Wushen42/o-pubsub.git"
+  },
+  "keywords": [
+    "pubsub",
+    "pattern",
+    "matching"
+  ],
+  "author": "Wushen42",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Wushen42/o-pubsub/issues"
+  },
+  "homepage": "https://github.com/Wushen42/o-pubsub#readme",
+  "dependencies": {
+    "assert": "^2.0.0",
+    "mocha": "^8.1.1",
+    "nyc": "^15.0.1",
+    "tcompare": "^5.0.2"
+  }
+}
