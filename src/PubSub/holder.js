@@ -23,11 +23,11 @@ module.exports=()=>{
     function addId(id,msg, observer) {
         assert.ok(typeof(id)!=='undefined');
         sanityCheck(msg,observer);
-        cache.push({ msg, observer });
+        cache.push({id, msg, observer });
     }
     function removeById(id){
         assert.ok(typeof(id)!=='undefined');
-        cache = cache.filter(c => !c.id===id);
+        cache = cache.filter(c => !(c.id===id));
     }
     function trigger(pattern){
         cache.filter(obj=>match(pattern,obj.msg).match).forEach(obj=>obj.observer(pattern));

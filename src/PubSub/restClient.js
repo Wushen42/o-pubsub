@@ -49,7 +49,7 @@ module.exports = (opts={})=>{
             req.end();   
             return ()=>unsubscribe(id);
     }
-    const unsubscribe=(id)=>{
+    function unsubscribe(id){
         const req = http.request({...sanityOptions,path:Path.join(sanityOptions.path,id),method:'DELETE'}, (res) => {
             //console.log(`statusCode: ${res.statusCode}`)
           })
@@ -58,7 +58,7 @@ module.exports = (opts={})=>{
             console.error(error)
           })
           
-          req.write('');
+          req.flushHeaders();
           req.end()
     }
     return {publish,subscribe};

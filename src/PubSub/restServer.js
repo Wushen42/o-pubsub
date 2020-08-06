@@ -10,7 +10,7 @@ module.exports = (opts)=>{
         res.send('o-pubsub is online');
     });
     app.post('/',(req,res)=>{
-        pubsub.publish(req.body);
+        trigger(req.body);
         res.status(200).send('published');
     });
     app.put('/',(req,res)=>{
@@ -23,7 +23,8 @@ module.exports = (opts)=>{
         ).on("close",()=>{
             unsubscribe();
         })
-        pubsub.addId(
+        console.log(req.body);
+        addId(
                 req.body.id,
                 req.body.pattern,
                 data=>{res.write(JSON.stringify(data))}
@@ -31,7 +32,10 @@ module.exports = (opts)=>{
         );
     });
     app.delete('/:id',(req,res)=>{
-        
+        const id=req.params.id
+        console.log('received id to delete' ,id);
+        removeById(id);
+        res.status(200).send();
     })
     return app.listen(3000);
 }
