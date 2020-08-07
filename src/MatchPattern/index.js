@@ -1,0 +1,1 @@
+exports.greedyMatch=require('./greedyPatternMatcher');

@@ -22,8 +22,7 @@ module.exports = (opts)=>{
         }
         ).on("close",()=>{
             unsubscribe();
-        })
-        console.log(req.body);
+        });
         add(
                 req.body.id,
                 req.body.pattern,
@@ -32,10 +31,9 @@ module.exports = (opts)=>{
         );
     });
     app.delete('/:id',(req,res)=>{
-        const id=req.params.id
-        console.log('received id to delete' ,id);
+        const id=req.params.id;
         remove(id);
         res.status(200).send();
     })
-    return app.listen(3000);
+    return app;
 }

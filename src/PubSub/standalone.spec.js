@@ -5,7 +5,7 @@ const async = (fn, delay) => {
   setTimeout(fn, delay || 0);
 };
 
-describe('PubSub', () => {
+describe('PubSub:Standalone', () => {
   it('handles empty object, null or undefined message', done => {
     const pubSub = PubSub();
     pubSub.subscribe({ hello: 'there' }, () => {
@@ -28,12 +28,12 @@ describe('PubSub', () => {
     let results = [];
     pubSub.subscribe({}, msg => {
       results.push(msg);
-      if (results.length === msgs.length) {
-        assert.deepEqual(results, msgs);
-        done();
-      }
     });
     msgs.forEach(pubSub.publish);
+    async(()=>{
+      assert.deepEqual(results, msgs);
+        done();
+    },10);
   });
 
   it('matches all values of a key with a regex', done => {
@@ -121,7 +121,7 @@ describe('PubSub', () => {
       results.push(data);
     });
     pubSub.subscribe(errMsg, data => {
-      results.push(data);
+      throw new Error('Should not be invoked');
     });
     
     pubSub.publish({floor1:{floor2:{floor3:'hello'}}});
@@ -130,5 +130,73 @@ describe('PubSub', () => {
       assert.deepEqual(results, [msg]);
       done();
     }, 10);
+  });
+  it('handles wildcard key', done => {
+    const pubSub = PubSub();
+    let results = [];
+    const msg = { '*': {floor2:{floor3:'hello'}} };
+    const msg2 = { floor1: {'*':{floor3:'hello'}} };
+    const msg3 = { '*': {floor2:{'*':'hello'}} };
+    const msg4 = { '*': {'*':{'*':'hello'}} };
+    const errmsg = {'*':'hello'};
+    pubSub.subscribe(msg, data => {
+      results.push(data);
+    });
+    pubSub.subscribe(msg2, data => {
+      results.push(data);
+    });
+    pubSub.subscribe(msg3, data => {
+      results.push(data);
+    });
+    pubSub.subscribe(msg4, data => {
+      results.push(data);
+    });
+    pubSub.subscribe(errmsg, data => {
+      results.push(data);
+    });
+    pubSub.publish({floor1:{floor2:{floor3:'hello'}}});
+
+    async(() => {
+      assert.deepEqual(results, [{floor1:{floor2:{floor3:'hello'}}},{floor1:{floor2:{floor3:'hello'}}},{floor1:{floor2:{floor3:'hello'}}},{floor1:{floor2:{floor3:'hello'}}}]);
+      done();
+    }, 10);
+  });
+  it('handles wildpath matching', done => {
+    const pubSub = PubSub();
+    let results = [];
+    const msg = { '**':'hello'};
+    const errMsg = { floor1: {floor2:{floor3:'NOPE'}} };
+    pubSub.subscribe(msg, data => {
+      results.push(data);
+    });
+    pubSub.subscribe(errMsg, data => {
+      throw new Error('Should not be invoked');
+    });
+    
+    pubSub.publish({floor1:{floor2:{floor3:'hello'}}});
+
+    async(() => {
+      assert.deepEqual(results, [{floor1:{floor2:{floor3:'hello'}}}]);
+      done();
+    }, 10);
+  });
+  it('handles wildpath and deep matching', done => {
+    const pubSub = PubSub();
+    let results = [];
+    const msg = { '**':{hi:'there'}};
+    const errMsg = { '**':{hi:'NOPE'}} ;
+    pubSub.subscribe(msg, data => {
+      results.push(data);
+    });
+    pubSub.subscribe(errMsg, data => {
+      throw new Error('Should not be invoked');
+    });
+    
+    pubSub.publish({floor1:{floor2:{floor3:{hi:'there'}}}});
+
+    async(() => {
+      assert.deepEqual(results, [{floor1:{floor2:{floor3:{hi:'there'}}}}]);
+      done();
+    }, 20);
   });
 });

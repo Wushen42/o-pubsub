@@ -17,6 +17,8 @@ module.exports = (opts={})=>{
     }
 
     const publish=(pattern)=>{
+        if(pattern===null)return ;
+        if(pattern===undefined) return ;
         const req = http.request({...sanityOptions,method:'POST'}, (res) => {
             //console.log(`statusCode: ${res.statusCode}`)
           })
@@ -24,7 +26,7 @@ module.exports = (opts={})=>{
           req.on('error', (error) => {
             console.error(error)
           })
-          
+          console.log('publishing:',pattern,' on port:',sanityOptions.port);
           req.write(JSON.stringify(pattern))
           req.end()
     }
@@ -33,10 +35,10 @@ module.exports = (opts={})=>{
             const req = http.request({...sanityOptions,method:'PUT'}, (res) => {
                 res.on('data',(data)=>{
                     try {
-                        const json = JSON.parse(data.toString().replace('data:', ''));
+                        const json = JSON.parse(data.toString());
                         observer(json);
                       } catch (err) {
-                        debug.warn('unable to parse', data.toString());
+                        console.log('unable to parse', data.toString(),err);
                       }
                     });         
             });
