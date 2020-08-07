@@ -1,7 +1,7 @@
 {
   "name": "o-pubsub",
   "version": "1.0.1",
-  "description": "Object matching publish/subscribe pattern",
+  "description": "Object matching publish/subscribe pattern.Don't bother with topics, subscribe to the data itself",
   "main": "index.js",
   "scripts": {
     "test": "mocha src/**/*.spec.js",
@@ -14,7 +14,8 @@
   "keywords": [
     "pubsub",
     "pattern",
-    "matching"
+    "matching",
+    "eventbus"
   ],
   "author": "Wushen42",
   "license": "ISC",
