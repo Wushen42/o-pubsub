@@ -1,6 +1,8 @@
 # o-pubsub
 Object matching publish/subscribe pattern
 
+Why bother defining routes and topics when you can subscribe to data?
+
 Easy to use pubsub mechanism using objects instead of strings 
 
 as a standalone
