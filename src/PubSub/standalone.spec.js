@@ -164,8 +164,8 @@ describe('PubSub:Standalone', () => {
   it('handles wildpath matching', done => {
     const pubSub = PubSub();
     let results = [];
-    const msg = { '**':'hello'};
-    const errMsg = { floor1: {floor2:{floor3:'NOPE'}} };
+    const msg = { '**':'hello',hi:'there'};
+    const errMsg = { '**':'hello',hi:'you' };
     pubSub.subscribe(msg, data => {
       results.push(data);
     });
@@ -173,10 +173,10 @@ describe('PubSub:Standalone', () => {
       throw new Error('Should not be invoked');
     });
     
-    pubSub.publish({floor1:{floor2:{floor3:'hello'}}});
+    pubSub.publish({floor1:{floor2:{floor3:'hello'}},hi:'there'});
 
     async(() => {
-      assert.deepEqual(results, [{floor1:{floor2:{floor3:'hello'}}}]);
+      assert.deepEqual(results, [{floor1:{floor2:{floor3:'hello'}},hi:'there'}]);
       done();
     }, 10);
   });
