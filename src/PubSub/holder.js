@@ -1,37 +1,73 @@
 const assert = require("assert");
-const {match}=require('tcompare');
+const {match,has}=require('tcompare');
 module.exports=()=>{
     let cache = [];
   
-    const sanityCheck=(pattern,observer)=>{
-        assert.ok(typeof(pattern)!=='undefined');
-        assert.ok(typeof(observer)==='function');
+    const sanityCheck=(id,pattern,observer)=>{
+        return id!=null &&
+               pattern!=null &&
+               typeof(observer)==='function';
     }
     
-    function add(msg, observer) {
-        sanityCheck(msg,observer);
-        cache.push({ msg, observer });
+    function add(id, pattern, observer) {
+        if(sanityCheck(id,pattern,observer) === false )return;
+        cache.push({ id, pattern, observer });
     }
   
-    function remove(msg, observer) {
-      sanityCheck(msg,observer);
-      cache = cache.filter(
-        pattern => !(pattern.msg === msg && pattern.observer === observer)
-      );
+    function remove(id) {
+        if(id==null) return;
+        cache = cache.filter(c => c.id!==id);
     }
     
-    function addId(id,msg, observer) {
-        assert.ok(typeof(id)!=='undefined');
-        sanityCheck(msg,observer);
-        cache.push({id, msg, observer });
+    const candidateSanityCheck=(candidate)=>{
+        return candidate!=null &&
+               (Array.isArray(candidate)?candidate.length>0:true)&&
+               (candidate instanceof Object?Object.keys(candidate).length>0:true);
     }
-    function removeById(id){
-        assert.ok(typeof(id)!=='undefined');
-        cache = cache.filter(c => !(c.id===id));
+
+    function trigger(candidate){
+        if(candidateSanityCheck(candidate)===false) return;
+        cache.filter(obj=>greedyMatch(candidate,obj.pattern)).forEach(obj=>obj.observer(candidate));
     }
-    function trigger(pattern){
-        cache.filter(obj=>match(pattern,obj.msg).match).forEach(obj=>obj.observer(pattern));
+
+    const greedyMatch=(candidate,pattern)=>{
+        if(Object.keys(pattern).length===0) return true;
+        if(candidate == null) return true; //default case for deep searching, should not be called because of trigger's assert.
+        if(typeof candidate==='string') return handleString(candidate,pattern);
+        if(typeof candidate ==='number') return handleNumber(candidate,pattern);
+        if(typeof candidate!==typeof pattern){
+            console.log('type mismatch, maybe unhandled');
+            return false;
+        }
+        
+        if(candidate instanceof RegExp) return handleRegExp(candidate,pattern);
+        if(pattern instanceof RegExp) return handleRegExp(pattern,candidate);
+        if(Array.isArray(candidate)) return handleArray(candidate,pattern);
+        if(candidate instanceof Object) return handleObject(candidate,pattern);
+        console.log('this case is not implemented yet');
+        return false;
     }
-    return {add,addId,remove,removeById,trigger};
+    const handleString=(candidate,pattern)=>{
+        if(pattern instanceof RegExp) return handleRegExp(pattern,candidate);
+        return candidate===pattern;
+    }
+    const handleNumber=(candidate, pattern)=>{
+        return candidate===pattern;
+    }
+    const handleArray=(candidate, pattern)=>{
+        if(! Array.isArray(pattern)) return false;
+        return candidate.length===pattern.length;
+    }
+    const handleRegExp=(regex,pattern)=>{
+        return pattern.toString().match(regex);
+    }
+    const handleObject=(candidate,pattern)=>{
+       return Object.keys(pattern).filter(key=>{
+
+            return greedyMatch(candidate[key],pattern[key]);
+        }).length>0;
+    }
+
+    return {add,remove,trigger};
     
 }

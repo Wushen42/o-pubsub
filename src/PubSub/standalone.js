@@ -1,5 +1,5 @@
 
-
+const UUID=require('./UUID');
 const assert = require('assert');
 const Holder = require('./holder');
 module.exports=()=>{
@@ -7,12 +7,13 @@ module.exports=()=>{
     const {add,remove,trigger}=Holder();
 
     const publish=trigger;
-    const unsubscribe=(pattern,observer)=>{
-        remove(pattern,observer);
+    const unsubscribe=(id)=>{
+        remove(id);
     }
     const subscribe=(pattern,observer)=>{
-        add(pattern,observer);
-        return ()=>unsubscribe(pattern,observer);
+        const id=UUID();
+        add(id,pattern,observer);
+        return ()=>unsubscribe(id);
     }
     return {publish,subscribe};
 }

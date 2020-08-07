@@ -1,5 +1,5 @@
 const assert = require('assert');
-const PubSub = require('./index');
+const PubSub = require('./index').standalone;
 
 const async = (fn, delay) => {
   setTimeout(fn, delay || 0);
@@ -11,6 +11,8 @@ describe('PubSub', () => {
     pubSub.subscribe({ hello: 'there' }, () => {
       throw new Error('Should not be invoked with empty messages');
     });
+    pubSub.publish(undefined);
+    pubSub.publish(null);
     pubSub.publish({});
     pubSub.publish([]);
     async(() => done());
@@ -36,7 +38,7 @@ describe('PubSub', () => {
 
   it('matches all values of a key with a regex', done => {
     const pubSub = PubSub();
-    const msgs = [{ hello: 'world', hi: 'you' }, { hi: 'there' }];
+    const msgs = [{ hello: 'world', hi: 'you' }, { hi: 'there' },{hi:['there','you']}];
     let results = [];
     pubSub.subscribe({ hi: /.*/ }, msg => {
       results.push(msg);
@@ -69,10 +71,7 @@ describe('PubSub', () => {
     let received = [];
     const pubSub = PubSub();
     const messages = [{ some: 'action' }, { hello: 'there' }];
-    const myHandler = msg => {
-      received.push(msg);
-    };
-    messages.forEach(msg => pubSub.subscribe(msg, myHandler));
+    messages.forEach(msg => pubSub.subscribe(msg, received.push));
     pubSub.publish({ other: 'thing' });
     pubSub.publish({ something: 'extra' });
     async(() => {
@@ -107,34 +106,29 @@ describe('PubSub', () => {
     });
     unsub();
     pubSub.publish(msg);
-    pubSub.publish(msg);
-    pubSub.publish(msg);
 
     async(() => {
       assert.deepEqual(results, []);
       done();
     }, 10);
   });
-
-  it('notifies multiple subscribers for the same message, in order of subscription', done => {
-    let received = [];
+  it('handles deep matching', done => {
     const pubSub = PubSub();
-    pubSub.subscribe({ some: 'action' }, () => {
-      received.push(1);
+    let results = [];
+    const msg = { floor1: {floor2:{floor3:'hello'}} };
+    const errMsg = { floor1: {floor2:{floor3:'NOPE'}} };
+    pubSub.subscribe(msg, data => {
+      results.push(data);
     });
-    pubSub.subscribe({ some: 'action' }, () => {
-      received.push(2);
+    pubSub.subscribe(errMsg, data => {
+      results.push(data);
     });
-    pubSub.subscribe({ some: 'action' }, () => {
-      received.push(3);
-    });
-
-    const message = { some: 'action' };
-    pubSub.publish(message);
+    
+    pubSub.publish({floor1:{floor2:{floor3:'hello'}}});
 
     async(() => {
-      assert.deepEqual(received, [1, 2, 3]);
+      assert.deepEqual(results, [msg]);
       done();
-    });
+    }, 10);
   });
 });

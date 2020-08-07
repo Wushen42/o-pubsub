@@ -4,7 +4,7 @@ const Holder = require('./holder');
 
 module.exports = (opts)=>{
     
-    const {addId,removeById,trigger}=Holder();
+    const {add,remove,trigger}=Holder();
     app.use(express.json());
     app.get('/', function (req, res) {
         res.send('o-pubsub is online');
@@ -24,7 +24,7 @@ module.exports = (opts)=>{
             unsubscribe();
         })
         console.log(req.body);
-        addId(
+        add(
                 req.body.id,
                 req.body.pattern,
                 data=>{res.write(JSON.stringify(data))}
@@ -34,7 +34,7 @@ module.exports = (opts)=>{
     app.delete('/:id',(req,res)=>{
         const id=req.params.id
         console.log('received id to delete' ,id);
-        removeById(id);
+        remove(id);
         res.status(200).send();
     })
     return app.listen(3000);
