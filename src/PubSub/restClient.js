@@ -25,14 +25,14 @@ module.exports = (opts={})=>{
           
           req.on('error', (error) => {
             console.error(error)
-          })
-          console.log('publishing:',pattern,' on port:',sanityOptions.port);
+          });
           req.write(JSON.stringify(pattern))
           req.end()
     }
     const subscribe=(pattern,observer)=>{
-        
+      const id=uuid();
             const req = http.request({...sanityOptions,method:'PUT'}, (res) => {
+              res.on('error',()=>unsubscribe(id));
                 res.on('data',(data)=>{
                     try {
                         const json = JSON.parse(data.toString());
@@ -46,7 +46,7 @@ module.exports = (opts={})=>{
             req.on('error', (error) => {
               console.error(error)
             })
-            const id=uuid();
+            
             req.write(JSON.stringify({id,pattern}));
             req.end();   
             return ()=>unsubscribe(id);
