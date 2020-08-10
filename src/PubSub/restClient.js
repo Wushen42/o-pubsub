@@ -4,7 +4,7 @@ const Path=require('path');
 const templateOptions = {
     hostname: 'localhost',
     port: 3000,
-    path: '/',
+    path: '/o-pubsub/',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
@@ -31,7 +31,7 @@ module.exports = (opts={})=>{
     }
     const subscribe=(pattern,observer)=>{
       const id=uuid();
-            const req = http.request({...sanityOptions,method:'PUT'}, (res) => {
+            const req = http.request({...sanityOptions,path:Path.join(sanityOptions.path,id), method:'PUT'}, (res) => {
               res.on('error',()=>unsubscribe(id));
                 res.on('data',(data)=>{
                     try {
@@ -47,7 +47,7 @@ module.exports = (opts={})=>{
               console.error(error)
             })
             
-            req.write(JSON.stringify({id,pattern}));
+            req.write(JSON.stringify(pattern));
             req.end();   
             return ()=>unsubscribe(id);
     }

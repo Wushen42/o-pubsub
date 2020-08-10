@@ -6,15 +6,22 @@ module.exports = (opts)=>{
     const {add,remove,trigger}=Holder();
     let connections={};
     app.use(express.json());
-    app.get('/', function (req, res) {
+    app.get('/o-pubsub/', function (req, res) {
         res.send('o-pubsub is online');
     });
-    app.post('/',(req,res)=>{
+    app.post('/o-pubsub/',(req,res)=>{
         trigger(req.body);
         res.status(200).send('published');
     });
-    app.put('/',(req,res)=>{
-        const id=req.body.id;
+    app.put('/o-pubsub/:id',(req,res)=>{
+        const id=req.params.id;
+        connections[id]={ id, res};
+        add(
+                id,
+                req.body,
+                data=>{res.write(JSON.stringify(data))}
+            
+        );
         const unsubscribe=()=>{
             remove(id);
         }
@@ -24,15 +31,8 @@ module.exports = (opts)=>{
         ).on("close",()=>{
             unsubscribe();
         });
-        connections[id]={ id, res};
-        add(
-                req.body.id,
-                req.body.pattern,
-                data=>{res.write(JSON.stringify(data))}
-            
-        );
     });
-    app.delete('/:id',(req,res)=>{
+    app.delete('/o-pubsub/:id',(req,res)=>{
         const id=req.params.id;
         const cpy=connections;
         cpy[id]?.res?.destroy();

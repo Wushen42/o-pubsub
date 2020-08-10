@@ -16,7 +16,7 @@ publish({hello:'you',meaning:{of:{life:42}}});
 unsubscribe();
 publish({hello:'there',meaning:{of:{life:42}}});
 ```
-or as a web service(in progress, at the moment the server listen only on 3000 with http without possible route)
+or as a web service
 
 ```javascript
 const OPubSub = require('o-pubsub');
@@ -81,5 +81,32 @@ const testwildpath=()=>{
     pubSub.publish({floor1:{floor2:{floor3:'hello'}}});
 }
 ```
+
+### Constructors
+|Name|Comment|Options|
+| ------------- | ------------- | ------------- |
+|standalone()| returns publish and subscribe methods||
+|restServer()| returns Express.js server||
+|restClient({options}) |returns publish and subscribe methods, options are http requests one.| default{<br> hostname: 'localhost',<br>    port: 3000,<br>    path: '/o-pubsub/',<br>    method: 'GET',<br>    headers: {<br>      'Content-Type': 'application/json'<br>    }<br>}|
+
+
+### Methods
+|Name | Comment|
+| ------------- | ------------- |
+|publish(data)| send data to every pattern subscribers.|
+|unsubscribe=subscribe(pattern,callback)| subscribe to the pattern, return the unsubscribe method. as it's a FireAndForget, ensure to store this method.|
+|unsubscribe()|unsubscribe to pattern.|
+
+### API
+
+restClient is a wrapper for restServer but you could implement it on your own:
+
+| Name | Comment |
+| --------------------------- | ------------- |
+| get('/o-pubsub/') | returns 'o-pubsub is online'.|
+| post('/o-pubsub/') | will publish req.body.|
+| put('/o-pubsub/:id') | will subscribe to req.body, ensure to store id for unsubscription.|
+| delete('/o-pubsub/:id') | unsubscribe to pattern registered with given id.|
+
 publish and subscribe accept Object,number,regexp,string,Array 
-note: on array the comparison is made forst on type then on length, not on data inside.
+note: on array the comparison is made first on type then on length, not on data inside.
