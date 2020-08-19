@@ -1,13 +1,12 @@
-const assert = require("assert");
-const Match=require('../MatchPattern');
+const Match=require("../MatchPattern");
 module.exports=(opts={})=>{
     const match=opts.matcher||Match.greedyMatch;
     let cache = [];
     const sanityCheck=(id,pattern,observer)=>{
         return id!=null &&
                pattern!=null &&
-               typeof(observer)==='function';
-    }
+               typeof(observer)==="function";
+    };
     
     function add(id, pattern, observer) {
         if(sanityCheck(id,pattern,observer) === false )return;
@@ -23,7 +22,7 @@ module.exports=(opts={})=>{
         return candidate!=null &&
                (Array.isArray(candidate)?candidate.length>0:true)&&
                (candidate instanceof Object?Object.keys(candidate).length>0:true);
-    }
+    };
 
     function trigger(candidate){
         if(candidateSanityCheck(candidate)===false) return;
@@ -33,4 +32,4 @@ module.exports=(opts={})=>{
     
     return {add,remove,trigger};
     
-}
+};

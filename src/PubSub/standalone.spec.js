@@ -1,15 +1,15 @@
-const assert = require('assert');
-const PubSub = require('./index').standalone;
+const assert = require("assert");
+const PubSub = require("./index").standalone;
 
 const async = (fn, delay) => {
   setTimeout(fn, delay || 0);
 };
 
-describe('PubSub:Standalone', () => {
-  it('handles empty object, null or undefined message', done => {
+describe("PubSub:Standalone", () => {
+  it("handles empty object, null or undefined message", done => {
     const pubSub = PubSub();
-    pubSub.subscribe({ hello: 'there' }, () => {
-      throw new Error('Should not be invoked with empty messages');
+    pubSub.subscribe({ hello: "there" }, () => {
+      throw new Error("Should not be invoked with empty messages");
     });
     pubSub.publish(undefined);
     pubSub.publish(null);
@@ -18,12 +18,12 @@ describe('PubSub:Standalone', () => {
     async(() => done());
   });
 
-  it('can subscribe to all messages', done => {
+  it("can subscribe to all messages", done => {
     const pubSub = PubSub();
     const msgs = [
-      { hello: 'world', hi: 'you' },
-      { hi: 'there' },
-      { beep: 'boop', tricky: 'neat' }
+      { hello: "world", hi: "you" },
+      { hi: "there" },
+      { beep: "boop", tricky: "neat" }
     ];
     let results = [];
     pubSub.subscribe({}, msg => {
@@ -36,9 +36,9 @@ describe('PubSub:Standalone', () => {
     },10);
   });
 
-  it('matches all values of a key with a regex', done => {
+  it("matches all values of a key with a regex", done => {
     const pubSub = PubSub();
-    const msgs = [{ hello: 'world', hi: 'you' }, { hi: 'there' },{hi:['there','you']}];
+    const msgs = [{ hello: "world", hi: "you" }, { hi: "there" },{hi:["there","you"]}];
     let results = [];
     pubSub.subscribe({ hi: /.*/ }, msg => {
       results.push(msg);
@@ -48,17 +48,17 @@ describe('PubSub:Standalone', () => {
       }
     });
     msgs.forEach(pubSub.publish);
-    pubSub.publish({ beep: 'boop', tricky: 'neat' });
+    pubSub.publish({ beep: "boop", tricky: "neat" });
   });
 
-  it('handles partial matching', done => {
+  it("handles partial matching", done => {
     let received = [];
     const pubSub = PubSub();
-    pubSub.subscribe({ friend: 'yes', hello: 'there' }, msg => {
+    pubSub.subscribe({ friend: "yes", hello: "there" }, msg => {
       received.push(msg);
     });
 
-    const message = { some: 'action', hello: 'there', friend: 'yes' };
+    const message = { some: "action", hello: "there", friend: "yes" };
     pubSub.publish(message);
 
     async(() => {
@@ -67,23 +67,23 @@ describe('PubSub:Standalone', () => {
     });
   });
 
-  it('subscribes only to desired messages', done => {
+  it("subscribes only to desired messages", done => {
     let received = [];
     const pubSub = PubSub();
-    const messages = [{ some: 'action' }, { hello: 'there' }];
+    const messages = [{ some: "action" }, { hello: "there" }];
     messages.forEach(msg => pubSub.subscribe(msg, received.push));
-    pubSub.publish({ other: 'thing' });
-    pubSub.publish({ something: 'extra' });
+    pubSub.publish({ other: "thing" });
+    pubSub.publish({ something: "extra" });
     async(() => {
       assert.deepEqual(received, []);
       done();
     });
   });
 
-  it('accepts messages of type Object and Array', done => {
+  it("accepts messages of type Object and Array", done => {
     let received = [];
     const pubSub = PubSub();
-    const messages = [{ my: 'value' }, [1, 2, 3]];
+    const messages = [{ my: "value" }, [1, 2, 3]];
     const myHandler = msg => {
       received.push(msg);
     };
@@ -97,10 +97,10 @@ describe('PubSub:Standalone', () => {
     });
   });
 
-  it('unsubscribe inhibits future messages', done => {
+  it("unsubscribe inhibits future messages", done => {
     const pubSub = PubSub();
     let results = [];
-    const msg = { beep: 'boop' };
+    const msg = { beep: "boop" };
     let unsub = pubSub.subscribe(msg, data => {
       results.push(data);
     });
@@ -112,33 +112,33 @@ describe('PubSub:Standalone', () => {
       done();
     }, 10);
   });
-  it('handles deep matching', done => {
+  it("handles deep matching", done => {
     const pubSub = PubSub();
     let results = [];
-    const msg = { floor1: {floor2:{floor3:'hello'}} };
-    const errMsg = { floor1: {floor2:{floor3:'NOPE'}} };
+    const msg = { floor1: {floor2:{floor3:"hello"}} };
+    const errMsg = { floor1: {floor2:{floor3:"NOPE"}} };
     pubSub.subscribe(msg, data => {
       results.push(data);
     });
-    pubSub.subscribe(errMsg, data => {
-      throw new Error('Should not be invoked');
+    pubSub.subscribe(errMsg, () => {
+      throw new Error("Should not be invoked");
     });
     
-    pubSub.publish({floor1:{floor2:{floor3:'hello'}}});
+    pubSub.publish({floor1:{floor2:{floor3:"hello"}}});
 
     async(() => {
       assert.deepEqual(results, [msg]);
       done();
     }, 10);
   });
-  it('handles wildcard key', done => {
+  it("handles wildcard key", done => {
     const pubSub = PubSub();
     let results = [];
-    const msg = { '*': {floor2:{floor3:'hello'}} };
-    const msg2 = { floor1: {'*':{floor3:'hello'}} };
-    const msg3 = { '*': {floor2:{'*':'hello'}} };
-    const msg4 = { '*': {'*':{'*':'hello'}} };
-    const errmsg = {'*':'hello'};
+    const msg = { "*": {floor2:{floor3:"hello"}} };
+    const msg2 = { floor1: {"*":{floor3:"hello"}} };
+    const msg3 = { "*": {floor2:{"*":"hello"}} };
+    const msg4 = { "*": {"*":{"*":"hello"}} };
+    const errmsg = {"*":"hello"};
     pubSub.subscribe(msg, data => {
       results.push(data);
     });
@@ -154,48 +154,48 @@ describe('PubSub:Standalone', () => {
     pubSub.subscribe(errmsg, data => {
       results.push(data);
     });
-    pubSub.publish({floor1:{floor2:{floor3:'hello'}}});
+    pubSub.publish({floor1:{floor2:{floor3:"hello"}}});
 
     async(() => {
-      assert.deepEqual(results, [{floor1:{floor2:{floor3:'hello'}}},{floor1:{floor2:{floor3:'hello'}}},{floor1:{floor2:{floor3:'hello'}}},{floor1:{floor2:{floor3:'hello'}}}]);
+      assert.deepEqual(results, [{floor1:{floor2:{floor3:"hello"}}},{floor1:{floor2:{floor3:"hello"}}},{floor1:{floor2:{floor3:"hello"}}},{floor1:{floor2:{floor3:"hello"}}}]);
       done();
     }, 10);
   });
-  it('handles wildpath matching', done => {
+  it("handles wildpath matching", done => {
     const pubSub = PubSub();
     let results = [];
-    const msg = { '**':'hello',hi:'there'};
-    const errMsg = { '**':'hello',hi:'you' };
+    const msg = { "**":"hello",hi:"there"};
+    const errMsg = { "**":"hello",hi:"you" };
     pubSub.subscribe(msg, data => {
       results.push(data);
     });
-    pubSub.subscribe(errMsg, data => {
-      throw new Error('Should not be invoked');
+    pubSub.subscribe(errMsg, () => {
+      throw new Error("Should not be invoked");
     });
     
-    pubSub.publish({floor1:{floor2:{floor3:'hello'}},hi:'there'});
+    pubSub.publish({floor1:{floor2:{floor3:"hello"}},hi:"there"});
 
     async(() => {
-      assert.deepEqual(results, [{floor1:{floor2:{floor3:'hello'}},hi:'there'}]);
+      assert.deepEqual(results, [{floor1:{floor2:{floor3:"hello"}},hi:"there"}]);
       done();
     }, 10);
   });
-  it('handles wildpath and deep matching', done => {
+  it("handles wildpath and deep matching", done => {
     const pubSub = PubSub();
     let results = [];
-    const msg = { '**':{hi:'there'}};
-    const errMsg = { '**':{hi:'NOPE'}} ;
+    const msg = { "**":{hi:"there"}};
+    const errMsg = { "**":{hi:"NOPE"}} ;
     pubSub.subscribe(msg, data => {
       results.push(data);
     });
-    pubSub.subscribe(errMsg, data => {
-      throw new Error('Should not be invoked');
+    pubSub.subscribe(errMsg, () => {
+      throw new Error("Should not be invoked");
     });
     
-    pubSub.publish({floor1:{floor2:{floor3:{hi:'there'}}}});
+    pubSub.publish({floor1:{floor2:{floor3:{hi:"there"}}}});
 
     async(() => {
-      assert.deepEqual(results, [{floor1:{floor2:{floor3:{hi:'there'}}}}]);
+      assert.deepEqual(results, [{floor1:{floor2:{floor3:{hi:"there"}}}}]);
       done();
     }, 20);
   });

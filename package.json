@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha src/**/*.spec.js",
-    "cover": "./scripts/cover.sh"
+    "cover": "./scripts/cover.sh",
+    "lint": "eslint ./src",
+    "format": "eslint --fix ./src"
   },
   "repository": {
     "type": "git",
@@ -28,5 +30,8 @@
     "express": "^4.17.1",
     "mocha": "^8.1.1",
     "nyc": "^15.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.7.0"
   }
 }
