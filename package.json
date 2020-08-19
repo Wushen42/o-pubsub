@@ -1,6 +1,6 @@
 {
   "name": "o-pubsub",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Object matching publish/subscribe pattern.Don't bother with topics, subscribe to the data itself",
   "main": "index.js",
   "scripts": {
