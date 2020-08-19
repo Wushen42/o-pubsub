@@ -3,7 +3,7 @@ var app = express();
 const Holder = require('./holder');
 
 module.exports = (opts)=>{
-    const {add,remove,trigger}=Holder();
+    const {add,remove,trigger}=Holder(opts);
     let connections={};
     app.use(express.json());
     app.get('/o-pubsub/', function (req, res) {

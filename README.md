@@ -85,10 +85,11 @@ const testwildpath=()=>{
 ### Constructors
 |Name|Comment|Options|
 | ------------- | ------------- | ------------- |
-|standalone()| returns publish and subscribe methods||
-|restServer()| returns Express.js server||
+|standalone({options})| returns publish and subscribe methods| options:{<br> matcher:(candidate,pattern)=>return boolean<br>}|
+|restServer({options})| returns Express.js server| options:{<br> matcher:(candidate,pattern)=>return boolean<br>}|
 |restClient({options}) |returns publish and subscribe methods, options are http requests one.| default{<br> hostname: 'localhost',<br>    port: 3000,<br>    path: '/o-pubsub/',<br>    method: 'GET',<br>    headers: {<br>      'Content-Type': 'application/json'<br>    }<br>}|
 
+Create your own matcher and pass it as a parameters, candidate and pattern can be anything.
 
 ### Methods
 |Name | Comment|

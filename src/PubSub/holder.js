@@ -1,6 +1,7 @@
 const assert = require("assert");
-const match=require('../MatchPattern').greedyMatch;
-module.exports=()=>{
+const Match=require('../MatchPattern');
+module.exports=(opts={})=>{
+    const match=opts.matcher||Match.greedyMatch;
     let cache = [];
     const sanityCheck=(id,pattern,observer)=>{
         return id!=null &&
